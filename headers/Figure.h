@@ -3,6 +3,7 @@
 #include <array>
 #include <SFML/Graphics.hpp>
 #include "Game.h"
+#include <time.h>
 
 const sf::Color FigureColors[7] = {
     sf::Color(248, 196, 50),

@@ -2,8 +2,9 @@
 #include "headers/Figure.h"
 
 Figure::Figure(std::shared_ptr<Window> w, sf::Vector2u c) : window(w), coords(c) {
-    blocks = FigureBlocks[0];
-    color  = FigureColors[1];
+    srand(time(NULL));
+    blocks = FigureBlocks[rand() % FigureBlocks.size()];
+    color  = FigureColors[rand() % sizeof(FigureColors) / sizeof(sf::Color)];
 
     // -1 to make the padding between blocks
     rect.setSize(sf::Vector2f(Game::BLOCK_SIZE - 1, Game::BLOCK_SIZE - 1));
@@ -88,11 +89,6 @@ void Figure::render() {
     for (int i = 0; i < 16; i++) {
         if (blocks[i] == 1) {
             rect.setFillColor(color);
-            rect.setPosition(coords.x * Game::BLOCK_SIZE + (i % 4) * Game::BLOCK_SIZE,
-                coords.y * Game::BLOCK_SIZE + ((int)i / 4) * Game::BLOCK_SIZE);
-            window->draw(rect); 
-        } else {
-            rect.setFillColor(sf::Color(44, 22, 180));
             rect.setPosition(coords.x * Game::BLOCK_SIZE + (i % 4) * Game::BLOCK_SIZE,
                 coords.y * Game::BLOCK_SIZE + ((int)i / 4) * Game::BLOCK_SIZE);
             window->draw(rect); 

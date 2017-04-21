@@ -25,6 +25,7 @@ public:
     static const int WINDOW_WIDTH = 500;
     static const int WINDOW_HEIGHT = 600;
     static const int BLOCK_SIZE = 30;
+    static const int TOP_SPEED = 20;
 
 private:
     void attachCallbacks();
@@ -32,6 +33,7 @@ private:
     void arrowLeft(EventDetails*);
     void arrowRight(EventDetails*);
     void speedUp(EventDetails*);
+    void speedDown(EventDetails*);
 
     std::shared_ptr<EventManager> eventManager;
     std::shared_ptr<Window> window;
@@ -40,5 +42,8 @@ private:
     sf::Time elapsed;
     int score = 0;
     int level = 3;
+    int speed;
     bool lost = false;
+    // This flag is needed because of strange sharp movement on the start
+    bool speedUpNeeded = false;
 };
