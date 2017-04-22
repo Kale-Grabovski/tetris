@@ -2,7 +2,6 @@
 #include "headers/Figure.h"
 
 Figure::Figure(std::shared_ptr<Window> w, sf::Vector2u c) : window(w), coords(c) {
-    srand(time(NULL));
     blocks = FigureBlocks[rand() % FigureBlocks.size()];
     color  = FigureColors[rand() % sizeof(FigureColors) / sizeof(sf::Color)];
 
@@ -81,9 +80,10 @@ void Figure::onRight() {
     ++coords.x;
 }
 
-sf::Vector2u Figure::getCoords() const { return coords; }
 std::array<int, 16> Figure::getBlocks() const { return blocks; }
 sf::Color Figure::getColor() const { return color; }
+sf::Vector2u Figure::getCoords() const { return coords; }
+void Figure::setCoords(sf::Vector2u coords_) { coords = coords_; }
 
 void Figure::render() {
     for (int i = 0; i < 16; i++) {

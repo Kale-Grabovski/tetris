@@ -15,9 +15,8 @@ public:
     void update();
     void render();
     std::shared_ptr<Window> getWindow() const;
-    sf::Time getElapsed() const;
     void restartClock();
-    void increaseScore();
+    void increaseScore(int lines);
     void lose();
 
     static const int BLOCKS_HOR = 10;
@@ -26,9 +25,11 @@ public:
     static const int WINDOW_HEIGHT = 600;
     static const int BLOCK_SIZE = 30;
     static const int TOP_SPEED = 20;
+    static const int LEVEL_STEP = 3000;
 
 private:
     void attachCallbacks();
+    void checkIncreaseLevel();
     void arrowUp(EventDetails*);
     void arrowLeft(EventDetails*);
     void arrowRight(EventDetails*);
@@ -41,9 +42,7 @@ private:
     sf::Clock clock;
     sf::Time elapsed;
     int score = 0;
-    int level = 3;
+    int level = 1;
     int speed;
     bool lost = false;
-    // This flag is needed because of strange sharp movement on the start
-    bool speedUpNeeded = false;
 };

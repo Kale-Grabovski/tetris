@@ -3,7 +3,6 @@
 #include <array>
 #include <SFML/Graphics.hpp>
 #include "Game.h"
-#include <time.h>
 
 const sf::Color FigureColors[7] = {
     sf::Color(248, 196, 50),
@@ -44,6 +43,7 @@ public:
     void onRight();
     sf::Color getColor() const;
     sf::Vector2u getCoords() const;
+    void setCoords(sf::Vector2u);
     std::array<int, 16> getBlocks() const;
 private:
     std::shared_ptr<Window> window;

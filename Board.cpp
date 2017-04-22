@@ -12,20 +12,61 @@ Board::Board(std::shared_ptr<Window> w) : window(w) {
         }
     }
 
+    genNextFigure();
     genFigure();
 }
 
-void Board::genFigure() {
-    currentFigure = std::make_shared<Figure>(window, sf::Vector2u(3, -3));
+void Board::genNextFigure() {
+    nextFigure = std::make_shared<Figure>(window, sf::Vector2u(11, 4));
 }
 
-void Board::update() {
+bool Board::isGameOver() const { return gameOver; }
+
+void Board::genFigure() {
+    currentFigure = nextFigure;
+    currentFigure->setCoords(sf::Vector2u(3, -3));
+    genNextFigure();
+}
+
+int Board::update() {
+    int lines = 0;
+
     if (isCollided()) {
-        explodeFigure();
+        if (!explodeFigure()) {
+            gameOver = true;
+            return 0;
+        }
+        
+        lines = checkLines();
         genFigure();
     }
 
     currentFigure->update();
+
+    return lines;
+}
+
+int Board::checkLines() {
+    int linesQnt = 0;
+
+    for (int i = 0; i < Game::BLOCKS_VERT; i++) {
+        int blocksQnt = 0;
+        for (int k = 0; k < Game::BLOCKS_HOR; k++) {
+            if (grid[i][k]->exists) {
+                blocksQnt++;
+            }
+        }
+
+        if (blocksQnt == Game::BLOCKS_HOR) {
+            linesQnt++;
+            for (int t = i; t > 0; t--) {
+                grid[t] = grid[t - 1];
+            }
+        }
+
+    }
+
+    return linesQnt;
 }
 
 void Board::rotate() {
@@ -61,19 +102,31 @@ bool Board::checkSideMovePossible(const int offset) const {
     return true;
 }
 
-void Board::explodeFigure() {
+bool Board::explodeFigure() {
     // todo: duplicates
     sf::Vector2u coords = currentFigure->getCoords();
     std::array<int, 16> blocks = currentFigure->getBlocks();
+    bool isSuccess = true;
 
     // Turn the current figure into separated board blocks
     for (int i = 0; i < 16; i++) {
         if (blocks[i] == 1) {
-            grid[(int)i / 4 + coords.y][i % 4 + coords.x] = std::make_shared<BoardBlock>(currentFigure->getColor());
+            int y = (int)i / 4 + coords.y;
+            int x = i % 4 + coords.x;
+
+            if (y >= 0) {
+                grid[y][x] = std::make_shared<BoardBlock>(currentFigure->getColor());
+            }
+
+            if (y <= 0) {
+                isSuccess = false;
+            }
         }
     }
 
     currentFigure->destroy();
+
+    return isSuccess;
 }
 
 void Board::renderBlocks() {
@@ -123,6 +176,7 @@ void Board::render(const int gameScore, const int gameLevel) {
     drawGrid();
     renderBlocks();
     currentFigure->render();
+    nextFigure->render();
 }
 
 void Board::drawText(sf::Text &label, const std::string text, const int offsetX, const int offsetY) {
