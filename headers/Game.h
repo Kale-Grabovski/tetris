@@ -24,7 +24,7 @@ public:
     static const int WINDOW_WIDTH = 500;
     static const int WINDOW_HEIGHT = 600;
     static const int BLOCK_SIZE = 30;
-    static const int TOP_SPEED = 20;
+    static const int TOP_SPEED = 25;
     static const int LEVEL_STEP = 3000;
 
 private:
@@ -45,4 +45,5 @@ private:
     int level = 1;
     int speed;
     bool lost = false;
+    bool keyDownPressed = false;
 };

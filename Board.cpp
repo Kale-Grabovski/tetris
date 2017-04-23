@@ -36,7 +36,6 @@ int Board::update() {
             gameOver = true;
             return 0;
         }
-        
         lines = checkLines();
         genFigure();
     }

@@ -19,8 +19,21 @@ void Game::attachCallbacks() {
 void Game::arrowUp(EventDetails*) { board->rotate(); }
 void Game::arrowLeft(EventDetails*) { board->onLeft(); }
 void Game::arrowRight(EventDetails*) { board->onRight(); }
-void Game::speedUp(EventDetails*) { speed = TOP_SPEED; }
-void Game::speedDown(EventDetails*) { speed = level; }
+
+void Game::speedDown(EventDetails*) { 
+    speed = level; 
+    keyDownPressed = false; 
+}
+
+void Game::speedUp(EventDetails*) { 
+    // This method fired somehow after some time if we hold down key, 
+    // so we need this flag to prevent timer reset second time
+    if (!keyDownPressed) {
+        speed = TOP_SPEED; 
+        elapsed = sf::Time();
+        keyDownPressed = true;
+    }
+}
 
 void Game::setup() {
     attachCallbacks();
@@ -28,7 +41,7 @@ void Game::setup() {
 }
 
 void Game::update() {
-    sf::Time timestep = sf::seconds(0.7f / speed);
+    sf::Time timestep = sf::seconds(1.0f / speed);
 
     if (elapsed >= timestep) {
         int lines = board->update();
