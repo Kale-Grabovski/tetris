@@ -6,6 +6,7 @@ Game::Game()
     : eventManager(std::make_shared<EventManager>()),
     window(std::make_shared<Window>(eventManager, "Tetris", sf::Vector2u(WINDOW_WIDTH, WINDOW_HEIGHT))),
     board(std::make_shared<Board>(window)),
+    transform(std::make_shared<Transform>()),
     speed(level) {}
 
 void Game::attachCallbacks() {
@@ -16,9 +17,9 @@ void Game::attachCallbacks() {
     eventManager->addCallback("Arrow_down_released", &Game::speedDown, this);
 }
 
-void Game::arrowUp(EventDetails*) { board->rotate(); }
-void Game::arrowLeft(EventDetails*) { board->onLeft(); }
-void Game::arrowRight(EventDetails*) { board->onRight(); }
+void Game::arrowUp(EventDetails*) { transform->rotate(board, currentFigure); }
+void Game::arrowLeft(EventDetails*) { transform->toLeft(board, currentFigure); }
+void Game::arrowRight(EventDetails*) { transform->toRight(board, currentFigure); }
 
 void Game::speedDown(EventDetails*) { 
     speed = level; 
@@ -36,18 +37,41 @@ void Game::speedUp(EventDetails*) {
 }
 
 void Game::setup() {
-    attachCallbacks();
     srand(time(NULL));
+    attachCallbacks();
+    genNextFigure();
+    genFigure();
+}
+
+void Game::genNextFigure() {
+    nextFigure = std::make_shared<Figure>(window, sf::Vector2u(11, 4));
+}
+
+void Game::genFigure() {
+    currentFigure = nextFigure;
+    currentFigure->setCoords(sf::Vector2u(3, -3));
+    genNextFigure();
 }
 
 void Game::update() {
     sf::Time timestep = sf::seconds(1.0f / speed);
 
     if (elapsed >= timestep) {
-        int lines = board->update();
-        if (lines > 0) {
-            increaseScore(lines);
+        if (transform->isCollided(board, currentFigure)) {
+            if (!transform->explodeFigure(board, currentFigure)) {
+                // todo: Stop timer here or something
+                lost = true;
+            } else {
+                int lines = transform->getFullLines(board);
+                if (lines > 0) {
+                    increaseScore(lines);
+                }
+
+                genFigure();
+            }
         }
+
+        currentFigure->update();
 
         elapsed -= timestep;
     }
@@ -58,6 +82,8 @@ void Game::update() {
 void Game::render() {
     window->beginDraw();
     board->render(score, level);
+    currentFigure->render();
+    nextFigure->render();
     window->endDraw();
 }
 

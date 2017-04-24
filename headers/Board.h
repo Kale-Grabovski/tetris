@@ -15,38 +15,30 @@ struct BoardBlock {
     bool exists;
 };
 
+using Grid = std::array<std::array<std::shared_ptr<BoardBlock>, 10>, 20>;
+
 class Figure;
 class Window;
 class Game;
 class Board {
-public:
+    public:
     explicit Board(std::shared_ptr<Window> window);
 
-    int update();
+    void update();
     void render(const int, const int);
-    void rotate();
-    void onLeft();
-    void onRight();
-    bool isGameOver() const;
-private:
+    Grid getGrid() const;
+    void setGrid(const Grid grid);
+
+    private:
     void drawGrid();
-    void genFigure();
-    void genNextFigure();
     void renderBlocks();
-    bool explodeFigure();
-    bool isCollided() const;
     void drawLabels(const int, const int);
     void drawText(sf::Text &label, const std::string text, const int offsetX, const int offsetY);
-    bool checkSideMovePossible(const int offset) const;
-    int checkLines();
 
     std::shared_ptr<Window> window;
-    std::shared_ptr<Figure> currentFigure;
-    std::shared_ptr<Figure> nextFigure;
     sf::Font font;
     sf::Text score;
     sf::Text level;
     sf::RectangleShape rect;
-    std::array<std::array<std::shared_ptr<BoardBlock>, 10>, 20> grid; // todo: hardcoded shit
-    bool gameOver = false;
+    Grid mGrid;
 };

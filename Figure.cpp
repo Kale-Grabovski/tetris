@@ -13,75 +13,19 @@ void Figure::update() {
     ++coords.y;
 }
 
-void Figure::destroy() {
-    for (int i = 0; i < 16; i++) {
-        blocks[i] = 0;
-    }
-}
-
-void Figure::rotate() {
-    std::array<int, 16> rotatedBlocks;
-
-    // Rotate the figure
-    for (int i = 0; i < 4; i++) {
-        for (int k = 0; k < 4; k++) {
-            rotatedBlocks[i * 4 + k] = blocks[16 - 4 * (k + 1) + i];
-        }
-    }
-
-    blocks = rotatedBlocks;
-}
-
-void Figure::onLeft() {
-    for (int i = 0; i < 16; i++) {
-        if (blocks[i] == 1 && coords.x + i % 4 == 0) {
-            return;
-        }
-    }
-
-    // Shift the figure borders so the don't cross the left board
-    if (coords.x == 0) {
-        std::array<int, 16> shiftedBlocks;
-
-        for (int i = 0; i < 4; i++) {
-            for (int k = 0; k < 4; k++) {
-                shiftedBlocks[i * 4 + k] = (k == 3 ? 0 : blocks[4 * i + k + 1]);
-            }
-        }
-
-        blocks = shiftedBlocks;
-        return;
-    }
-
+void Figure::toLeft() {
     --coords.x;
 }
 
-void Figure::onRight() {
-    for (int i = 0; i < 16; i++) {
-        if (blocks[i] == 1 && coords.x + i % 4 == Game::BLOCKS_HOR - 1) {
-            return;
-        }
-    }
-
-    // Shift the figure borders so the don't cross the right board
-    if (coords.x == Game::BLOCKS_HOR - 4) {
-        std::array<int, 16> shiftedBlocks;
-
-        for (int i = 0; i < 4; i++) {
-            for (int k = 0; k < 4; k++) {
-                shiftedBlocks[i * 4 + k] = (k == 0 ? 0 : blocks[4 * i + k - 1]);
-            }
-        }
-
-        blocks = shiftedBlocks;
-        return;
-    }
-
-    ++coords.x;
+void Figure::toRight() { 
+    ++coords.x; 
 }
 
-std::array<int, 16> Figure::getBlocks() const { return blocks; }
 sf::Color Figure::getColor() const { return color; }
+
+std::array<int, 16> Figure::getBlocks() const { return blocks; }
+void Figure::setBlocks(std::array<int, 16> blocks_) { blocks = blocks_; }
+
 sf::Vector2u Figure::getCoords() const { return coords; }
 void Figure::setCoords(sf::Vector2u coords_) { coords = coords_; }
 
@@ -93,5 +37,11 @@ void Figure::render() {
                 coords.y * Game::BLOCK_SIZE + ((int)i / 4) * Game::BLOCK_SIZE);
             window->draw(rect); 
         }
+    }
+}
+
+void Figure::destroy() {
+    for (int i = 0; i < 16; i++) {
+        blocks[i] = 0;
     }
 }

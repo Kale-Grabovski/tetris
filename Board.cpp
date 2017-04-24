@@ -8,174 +8,32 @@ Board::Board(std::shared_ptr<Window> w) : window(w) {
     // Fill out the grid with zeros
     for (int i = 0; i < Game::BLOCKS_VERT; i++) {
         for (int k = 0; k < Game::BLOCKS_HOR; k++) {
-            grid[i][k] = std::make_shared<BoardBlock>();
+            mGrid[i][k] = std::make_shared<BoardBlock>();
         }
     }
-
-    genNextFigure();
-    genFigure();
 }
 
-void Board::genNextFigure() {
-    nextFigure = std::make_shared<Figure>(window, sf::Vector2u(11, 4));
-}
+Grid Board::getGrid() const { return mGrid; }
+void Board::setGrid(const Grid grid) { mGrid = grid; }
 
-bool Board::isGameOver() const { return gameOver; }
-
-void Board::genFigure() {
-    currentFigure = nextFigure;
-    currentFigure->setCoords(sf::Vector2u(3, -3));
-    genNextFigure();
-}
-
-int Board::update() {
-    int lines = 0;
-
-    if (isCollided()) {
-        if (!explodeFigure()) {
-            gameOver = true;
-            return 0;
-        }
-        lines = checkLines();
-        genFigure();
-    }
-
-    currentFigure->update();
-
-    return lines;
-}
-
-int Board::checkLines() {
-    int linesQnt = 0;
-
-    for (int i = 0; i < Game::BLOCKS_VERT; i++) {
-        int blocksQnt = 0;
-        for (int k = 0; k < Game::BLOCKS_HOR; k++) {
-            if (grid[i][k]->exists) {
-                blocksQnt++;
-            }
-        }
-
-        if (blocksQnt == Game::BLOCKS_HOR) {
-            linesQnt++;
-            for (int t = i; t > 0; t--) {
-                grid[t] = grid[t - 1];
-            }
-        }
-
-    }
-
-    return linesQnt;
-}
-
-void Board::rotate() {
-    currentFigure->rotate();
-}
-
-void Board::onLeft() {
-    if (checkSideMovePossible(-1)) {
-        currentFigure->onLeft();
-    }
-}
-
-void Board::onRight() {
-    if (checkSideMovePossible(1)) {
-        currentFigure->onRight();
-    }
-}
-
-// Check the collision with the right/left blocks
-bool Board::checkSideMovePossible(const int offset) const {
-    sf::Vector2u coords = currentFigure->getCoords();
-    std::array<int, 16> blocks = currentFigure->getBlocks();
-
-    for (int i = 0; i < 16; i++) {
-        int x = (int)i / 4 + coords.y;
-        int y = i % 4 + coords.x + offset;
-
-        if (x >= 0 && y >= 0 && blocks[i] == 1 && grid[x][y]->exists) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-bool Board::explodeFigure() {
-    // todo: duplicates
-    sf::Vector2u coords = currentFigure->getCoords();
-    std::array<int, 16> blocks = currentFigure->getBlocks();
-    bool isSuccess = true;
-
-    // Turn the current figure into separated board blocks
-    for (int i = 0; i < 16; i++) {
-        if (blocks[i] == 1) {
-            int y = (int)i / 4 + coords.y;
-            int x = i % 4 + coords.x;
-
-            if (y >= 0) {
-                grid[y][x] = std::make_shared<BoardBlock>(currentFigure->getColor());
-            }
-
-            if (y <= 0) {
-                isSuccess = false;
-            }
-        }
-    }
-
-    currentFigure->destroy();
-
-    return isSuccess;
-}
+void Board::update() {}
 
 void Board::renderBlocks() {
     for (int i = 0; i < Game::BLOCKS_VERT; i++) {
         for (int k = 0; k < Game::BLOCKS_HOR; k++) {
-            if (grid[i][k]->exists) {
-                rect.setFillColor(grid[i][k]->color);
+            if (mGrid[i][k]->exists) {
+                rect.setFillColor(mGrid[i][k]->color);
                 rect.setPosition(k * Game::BLOCK_SIZE, i * Game::BLOCK_SIZE);
-                window->draw(rect); 
+                window->draw(rect);
             }
         }
     }
-}
-
-bool Board::isCollided() const {
-    sf::Vector2u coords = currentFigure->getCoords();
-    std::array<int, 16> blocks = currentFigure->getBlocks();
-
-    // Check if we touch the bottom edge
-    for (uint s = 0; s < 16; s++) {
-        if (blocks[s] == 1 && (int)s / 4 + coords.y == Game::BLOCKS_VERT - 1) {
-            return true;
-        }
-    }
-
-    // Iterate through grid blocks to check if we touch another blocks
-    for (uint i = 0; i < Game::BLOCKS_VERT; i++) {
-        for (uint k = 0; k < Game::BLOCKS_HOR; k++) {
-
-            // Iterate through current figure to check position of each block
-            for (uint s = 0; s < 16; s++) {
-                if (blocks[s] == 1 && 
-                    grid[i][k]->exists &&
-                    k == s % 4 + coords.x && // check x-coords are equal
-                    i - 1 == (int)s / 4 + coords.y) { // check if figure block is above grid block
-                    return true;
-                }
-            }
-        }
-    }
-
-    return false;
 }
 
 void Board::render(const int gameScore, const int gameLevel) {
     drawLabels(gameScore, gameLevel);
     drawGrid();
     renderBlocks();
-    currentFigure->render();
-    nextFigure->render();
 }
 
 void Board::drawText(sf::Text &label, const std::string text, const int offsetX, const int offsetY) {

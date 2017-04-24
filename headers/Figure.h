@@ -33,19 +33,20 @@ const std::array<std::array<int, 16>, 14> FigureBlocks = {{
 
 class Game;
 class Figure {
-public:
+    public:
     explicit Figure(std::shared_ptr<Window> w, sf::Vector2u c);
     void render();
     void update();
     void destroy();
-    void rotate();
-    void onLeft();
-    void onRight();
+    void toLeft();
+    void toRight();
     sf::Color getColor() const;
     sf::Vector2u getCoords() const;
     void setCoords(sf::Vector2u);
     std::array<int, 16> getBlocks() const;
-private:
+    void setBlocks(std::array<int, 16>);
+    
+    private:
     std::shared_ptr<Window> window;
     sf::Vector2u coords;
     std::array<int, 16> blocks;
