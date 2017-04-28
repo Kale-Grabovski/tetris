@@ -1,11 +1,11 @@
 #include <iostream>
 #include "headers/Transform.h"
 
-void Transform::rotate(const BoardPtr board, FigurePtr figure) const {
+Transform::Transform(std::shared_ptr<Board> board) : mBoard(board) {}
+
+void Transform::rotate(FigurePtr figure) const {
     std::array<int, 16> blocks = figure->getBlocks();
     std::array<int, 16> rotatedBlocks;
-
-    // todo: Check on collisions here
 
     // Rotate the figure
     for (int i = 0; i < 4; i++) {
@@ -14,15 +14,37 @@ void Transform::rotate(const BoardPtr board, FigurePtr figure) const {
         }
     }
 
-    figure->setBlocks(rotatedBlocks);
+    // Check on collisions with border blocks
+    if (!hasCollisionsWithBlocks(figure, rotatedBlocks)) {
+        figure->setBlocks(rotatedBlocks);
+    }
 }
 
+bool Transform::hasCollisionsWithBlocks(const FigurePtr figure, const std::array<int, 16> blocks) const {
+    auto grid = mBoard->getGrid();
+    sf::Vector2u coords = figure->getCoords();
 
-void Transform::toLeft(BoardPtr board, FigurePtr figure) const {
+    for (int i = 0; i < BLOCKS_VERT; i++) {
+        for (int k = 0; k < BLOCKS_HOR; k++) {
+            for (int b = 0; b < 16; b++) {
+                int x = (int)b / 4 + coords.y;
+                int y = b % 4 + coords.x;
+
+                if (x >= 0 && y >= 0 && blocks[b] == 1 && grid[x][y]->exists) {
+                    return true;
+                }
+            }
+        }
+    }
+
+    return false;
+}
+
+void Transform::toLeft(FigurePtr figure) const {
     sf::Vector2u coords = figure->getCoords();
     std::array<int, 16> blocks = figure->getBlocks();
 
-    if (isSideMovePossible(board, coords, blocks, -1)) {
+    if (isSideMovePossible(coords, blocks, -1)) {
         if (coords.x == 0) {
             shiftFigureBordersRight(coords, blocks);
             return figure->setBlocks(blocks);
@@ -32,11 +54,11 @@ void Transform::toLeft(BoardPtr board, FigurePtr figure) const {
     }
 }
 
-void Transform::toRight(BoardPtr board, FigurePtr figure) const {
+void Transform::toRight(FigurePtr figure) const {
     sf::Vector2u coords = figure->getCoords();
     std::array<int, 16> blocks = figure->getBlocks();
 
-    if (isSideMovePossible(board, coords, blocks, 1)) {
+    if (isSideMovePossible(coords, blocks, 1)) {
         if (coords.x == BLOCKS_HOR - 4) {
             shiftFigureBordersLeft(coords, blocks);
             return figure->setBlocks(blocks);
@@ -74,9 +96,9 @@ void Transform::shiftFigureBordersLeft(const sf::Vector2u coords, std::array<int
 }
 
 // Check the collision with the right/left blocks
-bool Transform::isSideMovePossible(const BoardPtr board, const sf::Vector2u coords, 
+bool Transform::isSideMovePossible(const sf::Vector2u coords, 
     const std::array<int, 16> blocks, const int offset) const {
-    auto grid = board->getGrid();
+    auto grid = mBoard->getGrid();
 
     if (offset == -1) {
         // Check if we cross left border
@@ -108,8 +130,8 @@ bool Transform::isSideMovePossible(const BoardPtr board, const sf::Vector2u coor
 }
 
 // Explode figure blocks on board block and then destroy the figure
-bool Transform::explodeFigure(const BoardPtr board, const FigurePtr figure) const {
-    auto grid = board->getGrid();
+bool Transform::explodeFigure(const FigurePtr figure) const {
+    auto grid = mBoard->getGrid();
     sf::Vector2u coords = figure->getCoords();
     std::array<int, 16> blocks = figure->getBlocks();
     bool isSuccess = true;
@@ -133,14 +155,14 @@ bool Transform::explodeFigure(const BoardPtr board, const FigurePtr figure) cons
         }
     }
 
-    board->setGrid(grid);
+    mBoard->setGrid(grid);
     figure->destroy();
 
     return isSuccess;
 }
 
-bool Transform::isCollided(const BoardPtr board, FigurePtr figure) const {
-    auto grid = board->getGrid();
+bool Transform::isCollided(FigurePtr figure) const {
+    auto grid = mBoard->getGrid();
     sf::Vector2u coords = figure->getCoords();
     std::array<int, 16> blocks = figure->getBlocks();
 

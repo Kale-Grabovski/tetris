@@ -24,13 +24,15 @@ class Game {
     void lose();
 
     private:
-    void attachCallbacks();
-    void checkIncreaseLevel();
     void arrowUp(EventDetails*);
     void arrowLeft(EventDetails*);
     void arrowRight(EventDetails*);
     void speedUp(EventDetails*);
     void speedDown(EventDetails*);
+    void pause(EventDetails*);
+    
+    void attachCallbacks();
+    void checkIncreaseLevel();
     void genFigure();
     void genNextFigure();
 
@@ -45,6 +47,7 @@ class Game {
     int score = 0;
     int level = 1;
     int speed;
-    bool lost = false;
+    bool isLost = false;
+    bool isPaused = false;
     bool keyDownPressed = false;
 };

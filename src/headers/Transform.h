@@ -7,21 +7,23 @@
 class Board;
 class Figure;
 
-using BoardPtr  = std::shared_ptr<Board>;
 using FigurePtr = std::shared_ptr<Figure>;
 
 class Transform {
     public:
-    void rotate(const BoardPtr board, FigurePtr figure) const;
-    void toLeft(const BoardPtr board, FigurePtr figure) const;
-    void toRight(const BoardPtr board, FigurePtr figure) const;
-    bool isCollided(const BoardPtr board, FigurePtr figure) const;
-    bool explodeFigure(const BoardPtr board, FigurePtr figure) const;
+    explicit Transform(std::shared_ptr<Board>);
+
+    void rotate(FigurePtr figure) const;
+    void toLeft(FigurePtr figure) const;
+    void toRight(FigurePtr figure) const;
+    bool isCollided(FigurePtr figure) const;
+    bool explodeFigure(FigurePtr figure) const;
 
     private:
+    std::shared_ptr<Board> mBoard;
     bool rotatePossible() const;
-    bool isSideMovePossible(const BoardPtr board, const sf::Vector2u coords, 
-        const std::array<int, 16> blocks, const int offset) const;
+    bool isSideMovePossible(const sf::Vector2u coords, const std::array<int, 16> blocks, const int offset) const;
+    bool hasCollisionsWithBlocks(const FigurePtr figure, const std::array<int, 16> blocks) const;
     void shiftFigureBordersLeft(const sf::Vector2u coords, std::array<int, 16>& blocks) const;
     void shiftFigureBordersRight(const sf::Vector2u coords, std::array<int, 16>& blocks) const;
 };

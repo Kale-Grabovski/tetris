@@ -6,7 +6,7 @@ Game::Game()
     : eventManager(std::make_shared<EventManager>()),
     window(std::make_shared<Window>(eventManager, "Tetris", sf::Vector2u(WINDOW_WIDTH, WINDOW_HEIGHT))),
     board(std::make_shared<Board>(window)),
-    transform(std::make_shared<Transform>()),
+    transform(std::make_shared<Transform>(board)),
     speed(level) {}
 
 void Game::attachCallbacks() {
@@ -15,11 +15,28 @@ void Game::attachCallbacks() {
     eventManager->addCallback("Arrow_right", &Game::arrowRight, this);
     eventManager->addCallback("Arrow_down", &Game::speedUp, this);
     eventManager->addCallback("Arrow_down_released", &Game::speedDown, this);
+    eventManager->addCallback("Space", &Game::pause, this);
 }
 
-void Game::arrowUp(EventDetails*) { transform->rotate(board, currentFigure); }
-void Game::arrowLeft(EventDetails*) { transform->toLeft(board, currentFigure); }
-void Game::arrowRight(EventDetails*) { transform->toRight(board, currentFigure); }
+void Game::pause(EventDetails*) { isPaused = !isPaused; }
+
+void Game::arrowUp(EventDetails* e) { 
+    if (!isPaused) {
+        transform->rotate(currentFigure); 
+    }
+}
+
+void Game::arrowLeft(EventDetails*) { 
+    if (!isPaused) {
+        transform->toLeft(currentFigure); 
+    }
+}
+
+void Game::arrowRight(EventDetails*) { 
+    if (!isPaused) {
+        transform->toRight(currentFigure); 
+    }
+}
 
 void Game::speedDown(EventDetails*) { 
     speed = level; 
@@ -35,6 +52,8 @@ void Game::speedUp(EventDetails*) {
         keyDownPressed = true;
     }
 }
+
+
 
 void Game::setup() {
     srand(time(NULL));
@@ -57,10 +76,9 @@ void Game::update() {
     sf::Time timestep = sf::seconds(1.0f / speed);
 
     if (elapsed >= timestep) {
-        if (transform->isCollided(board, currentFigure)) {
-            if (!transform->explodeFigure(board, currentFigure)) {
-                // todo: Stop timer here or something
-                lost = true;
+        if (transform->isCollided(currentFigure)) {
+            if (!transform->explodeFigure(currentFigure)) {
+                lose();
             } else {
                 int lines = board->getFullLines();
                 if (lines > 0) {
@@ -71,7 +89,9 @@ void Game::update() {
             }
         }
 
-        currentFigure->update();
+        if (!isPaused) {
+            currentFigure->update();
+        }
 
         elapsed -= timestep;
     }
@@ -114,4 +134,5 @@ void Game::checkIncreaseLevel() {
     }
 }
 
-void Game::lose() {}
+// todo: Stop timer here or something
+void Game::lose() { isLost = true; }
