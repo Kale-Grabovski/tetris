@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include "constants.h"
 #include "Board.h"
 
 class Board;
@@ -16,7 +17,6 @@ class Transform {
     void toRight(const BoardPtr board, FigurePtr figure) const;
     bool isCollided(const BoardPtr board, FigurePtr figure) const;
     bool explodeFigure(const BoardPtr board, FigurePtr figure) const;
-    int getFullLines(BoardPtr board) const;
 
     private:
     bool rotatePossible() const;

@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <SFML/Graphics.hpp>
+#include "constants.h"
 #include "EventManager.h"
 #include "Window.h"
 #include "Board.h"
@@ -21,14 +22,6 @@ class Game {
     void restartClock();
     void increaseScore(int lines);
     void lose();
-
-    static const int BLOCKS_HOR = 10;
-    static const int BLOCKS_VERT = 20;
-    static const int WINDOW_WIDTH = 500;
-    static const int WINDOW_HEIGHT = 600;
-    static const int BLOCK_SIZE = 30;
-    static const int TOP_SPEED = 25;
-    static const int LEVEL_STEP = 3000;
 
     private:
     void attachCallbacks();
@@ -50,7 +43,7 @@ class Game {
     sf::Clock clock;
     sf::Time elapsed;
     int score = 0;
-    int level = 3;
+    int level = 1;
     int speed;
     bool lost = false;
     bool keyDownPressed = false;

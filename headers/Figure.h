@@ -2,6 +2,7 @@
 
 #include <array>
 #include <SFML/Graphics.hpp>
+#include "constants.h"
 #include "Game.h"
 
 const sf::Color FigureColors[7] = {

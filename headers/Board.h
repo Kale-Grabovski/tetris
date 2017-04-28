@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <SFML/Graphics.hpp>
+#include "constants.h"
 #include "Window.h"
 #include "Game.h"
 #include "Figure.h"
@@ -15,7 +16,7 @@ struct BoardBlock {
     bool exists;
 };
 
-using Grid = std::array<std::array<std::shared_ptr<BoardBlock>, 10>, 20>;
+using Grid = std::array<std::array<std::shared_ptr<BoardBlock>, BLOCKS_HOR>, BLOCKS_VERT>;
 
 class Figure;
 class Window;
@@ -28,6 +29,7 @@ class Board {
     void render(const int, const int);
     Grid getGrid() const;
     void setGrid(const Grid grid);
+    int getFullLines();
 
     private:
     void drawGrid();

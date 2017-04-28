@@ -62,7 +62,7 @@ void Game::update() {
                 // todo: Stop timer here or something
                 lost = true;
             } else {
-                int lines = transform->getFullLines(board);
+                int lines = board->getFullLines();
                 if (lines > 0) {
                     increaseScore(lines);
                 }

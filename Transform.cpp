@@ -17,30 +17,6 @@ void Transform::rotate(const BoardPtr board, FigurePtr figure) const {
     figure->setBlocks(rotatedBlocks);
 }
 
-int Transform::getFullLines(BoardPtr board) const {
-    int linesQnt = 0;
-    auto grid = board->getGrid();
-
-    for (int i = 0; i < Game::BLOCKS_VERT; i++) {
-        int blocksQnt = 0;
-        for (int k = 0; k < Game::BLOCKS_HOR; k++) {
-            if (grid[i][k]->exists) {
-                blocksQnt++;
-            }
-        }
-
-        if (blocksQnt == Game::BLOCKS_HOR) {
-            linesQnt++;
-            for (int t = i; t > 0; t--) {
-                grid[t] = grid[t - 1];
-            }
-        }
-    }
-
-    board->setGrid(grid);
-
-    return linesQnt;
-}
 
 void Transform::toLeft(BoardPtr board, FigurePtr figure) const {
     sf::Vector2u coords = figure->getCoords();
@@ -61,7 +37,7 @@ void Transform::toRight(BoardPtr board, FigurePtr figure) const {
     std::array<int, 16> blocks = figure->getBlocks();
 
     if (isSideMovePossible(board, coords, blocks, 1)) {
-        if (coords.x == Game::BLOCKS_HOR - 4) {
+        if (coords.x == BLOCKS_HOR - 4) {
             shiftFigureBordersLeft(coords, blocks);
             return figure->setBlocks(blocks);
         }
@@ -112,7 +88,7 @@ bool Transform::isSideMovePossible(const BoardPtr board, const sf::Vector2u coor
     } else {
         // Check if we cross right border
         for (int i = 0; i < 16; i++) {
-            if (blocks[i] == 1 && coords.x + i % 4 == Game::BLOCKS_HOR - 1) {
+            if (blocks[i] == 1 && coords.x + i % 4 == BLOCKS_HOR - 1) {
                 return false;
             }
         }
@@ -170,14 +146,14 @@ bool Transform::isCollided(const BoardPtr board, FigurePtr figure) const {
 
     // Check if we touch the bottom edge
     for (uint s = 0; s < 16; s++) {
-        if (blocks[s] == 1 && (int)s / 4 + coords.y == Game::BLOCKS_VERT - 1) {
+        if (blocks[s] == 1 && (int)s / 4 + coords.y == BLOCKS_VERT - 1) {
             return true;
         }
     }
 
     // Iterate through grid blocks to check if we touch another blocks
-    for (uint i = 0; i < Game::BLOCKS_VERT; i++) {
-        for (uint k = 0; k < Game::BLOCKS_HOR; k++) {
+    for (uint i = 0; i < BLOCKS_VERT; i++) {
+        for (uint k = 0; k < BLOCKS_HOR; k++) {
 
             // Iterate through current figure to check position of each block
             for (uint s = 0; s < 16; s++) {
