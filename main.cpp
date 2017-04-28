@@ -1,5 +1,5 @@
 #include <memory>
-#include "headers/Game.h"
+#include "src/headers/Game.h"
 
 int main(int argc, char* argv[]) {
     std::shared_ptr<Game> game(new Game());

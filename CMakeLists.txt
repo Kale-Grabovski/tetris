@@ -9,13 +9,12 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 # (you can also set it on the command line: -D CMAKE_BUILD_TYPE=Release)
 
-
 project(tetris)
 
 include_directories("${PROJECT_BINARY_DIR}")
 
-set(EXECUTABLE_NAME "tetris")
-file(GLOB OTHER_CPP *.cpp)
+set(EXECUTABLE_NAME "../tetris")
+file(GLOB OTHER_CPP src/*.cpp)
 add_executable(${EXECUTABLE_NAME} main.cpp ${OTHER_CPP})
 
 
@@ -26,7 +25,6 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH})
 #See the FindSFML.cmake file for additional details and instructions
 find_package(SFML 2 REQUIRED system window graphics network audio)
 if(SFML_FOUND)
-  message("-- SFML found")
   include_directories(${SFML_INCLUDE_DIR})
   target_link_libraries(${EXECUTABLE_NAME} ${SFML_LIBRARIES})
 endif()
