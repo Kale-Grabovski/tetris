@@ -2,7 +2,6 @@
 #include "headers/Board.h"
 
 Board::Board(std::shared_ptr<Window> w) : window(w) {
-    font.loadFromFile("arial.ttf");
     rect.setSize(sf::Vector2f(BLOCK_SIZE - 1, BLOCK_SIZE - 1));
 
     // Fill out the grid with zeros
@@ -17,18 +16,6 @@ Grid Board::getGrid() const { return mGrid; }
 void Board::setGrid(const Grid grid) { mGrid = grid; }
 
 void Board::update() {}
-
-void Board::renderBlocks() {
-    for (int i = 0; i < BLOCKS_VERT; i++) {
-        for (int k = 0; k < BLOCKS_HOR; k++) {
-            if (mGrid[i][k]->exists) {
-                rect.setFillColor(mGrid[i][k]->color);
-                rect.setPosition(k * BLOCK_SIZE, i * BLOCK_SIZE);
-                window->draw(rect);
-            }
-        }
-    }
-}
 
 int Board::getFullLines() {
     int linesQnt = 0;
@@ -52,32 +39,9 @@ int Board::getFullLines() {
     return linesQnt;
 }
 
-void Board::render(const int gameScore, const int gameLevel) {
-    drawLabels(gameScore, gameLevel);
+void Board::render() {
     drawGrid();
     renderBlocks();
-}
-
-void Board::drawText(sf::Text &label, const std::string text, const int offsetX, const int offsetY) {
-    label.setPosition(window->getSize().x / 2 + offsetX, offsetY);
-    label.setFont(font);
-    label.setString(text);
-    label.setCharacterSize(20);
-
-    window->draw(label);
-}
-
-void Board::drawLabels(const int gameScore, const int gameLevel) {
-    sf::Text scoreLabel;
-    sf::Text levelLabel;
-    sf::Text nextLabel;
-
-    drawText(scoreLabel, "Score:", 70, 20);
-    drawText(levelLabel, "Level:", 71, 50);
-    drawText(nextLabel,  "Next:",  70, 80);
-
-    drawText(score, std::to_string(gameScore), 135, 20);
-    drawText(level, std::to_string(gameLevel), 135, 50);
 }
 
 void Board::drawGrid() {
@@ -108,5 +72,17 @@ void Board::drawGrid() {
     window->draw(horLines);
     window->draw(vertLines);
     window->draw(border);
+}
+
+void Board::renderBlocks() {
+    for (int i = 0; i < BLOCKS_VERT; i++) {
+        for (int k = 0; k < BLOCKS_HOR; k++) {
+            if (mGrid[i][k]->exists) {
+                rect.setFillColor(mGrid[i][k]->color);
+                rect.setPosition(k * BLOCK_SIZE, i * BLOCK_SIZE);
+                window->draw(rect);
+            }
+        }
+    }
 }
 

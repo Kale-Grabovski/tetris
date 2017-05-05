@@ -7,6 +7,7 @@
 #include "Window.h"
 #include "Board.h"
 #include "Transform.h"
+#include "Label.h"
 
 class Board;
 class Figure;
@@ -30,7 +31,7 @@ class Game {
     void speedUp(EventDetails*);
     void speedDown(EventDetails*);
     void pause(EventDetails*);
-    
+
     void attachCallbacks();
     void checkIncreaseLevel();
     void genFigure();
@@ -40,6 +41,7 @@ class Game {
     std::shared_ptr<Window> window;
     std::shared_ptr<Board> board;
     std::shared_ptr<Transform> transform;
+    std::shared_ptr<Label> label;
     std::shared_ptr<Figure> currentFigure;
     std::shared_ptr<Figure> nextFigure;
     sf::Clock clock;

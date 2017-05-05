@@ -7,6 +7,7 @@ Game::Game()
     window(std::make_shared<Window>(eventManager, "Tetris", sf::Vector2u(WINDOW_WIDTH, WINDOW_HEIGHT))),
     board(std::make_shared<Board>(window)),
     transform(std::make_shared<Transform>(board)),
+    label(std::make_shared<Label>(window)),
     speed(level) {}
 
 void Game::attachCallbacks() {
@@ -52,8 +53,6 @@ void Game::speedUp(EventDetails*) {
         keyDownPressed = true;
     }
 }
-
-
 
 void Game::setup() {
     srand(time(NULL));
@@ -101,9 +100,10 @@ void Game::update() {
 
 void Game::render() {
     window->beginDraw();
-    board->render(score, level);
+    board->render();
     currentFigure->render();
     nextFigure->render();
+    label->render(score, level, isPaused, isLost);
     window->endDraw();
 }
 
